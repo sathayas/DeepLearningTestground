@@ -31,7 +31,7 @@ def sigmoid(x):
 # Wraper around the Neural Network
 def neural_network(x, theta):
     w1, b1, w2, b2 = theta
-    return sigmoid(np.dot((np.tanh(np.dot(x,w1) + b1)), w2) + b2)
+    return sigmoid(np.dot((sigmoid(np.dot(x,w1) + b1)), w2) + b2)
 
 # Wrapper around the objective function to be optimised
 def objective(theta, idx):
