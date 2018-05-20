@@ -8,7 +8,7 @@ import pylab
 examples = 1000
 features = 100
 X = npr.randn(examples, features)   # scalar features
-Y = (npr.randn(examples)>0.5).astype(int)  # binary labels
+Y = (npr.randn(examples)>0).astype(int)  # binary labels
 D = (X, Y)
 
 # Specify the network
@@ -20,24 +20,22 @@ w2 = npr.rand(layer1_units, layer2_units)
 b2 = npr.rand(layer2_units)
 theta = (w1, b1, w2, b2)
 
-### Start from here ###
 
-# Define the loss function
-def squared_loss(y, y_hat):
-    return np.dot((y - y_hat),(y - y_hat))
-
-# Output Layer
+# Define the loss function (binary cross entropy)
 def binary_cross_entropy(y, y_hat):
     return np.sum(-((y * np.log(y_hat)) + ((1-y) * np.log(1 - y_hat))))
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
 
 # Wraper around the Neural Network
 def neural_network(x, theta):
     w1, b1, w2, b2 = theta
-    return np.tanh(np.dot((np.tanh(np.dot(x,w1) + b1)), w2) + b2)
+    return sigmoid(np.dot((sigmoid(np.dot(x,w1) + b1)), w2) + b2)
 
 # Wrapper around the objective function to be optimised
 def objective(theta, idx):
-    return squared_loss(D[1][idx], neural_network(D[0][idx], theta))
+    return binary_cross_entropy(D[1][idx], neural_network(D[0][idx], theta))
 
 # Update
 def update_theta(theta, delta, alpha):
@@ -55,18 +53,18 @@ grad_objective = grad(objective)
 
 # Train the Neural Network
 epochs = 10
-print("RMSE before training:",
-      sklearn.metrics.mean_squared_error(D[1],neural_network(D[0],theta)))
-rmse = []
+Y_pred  = (neural_network(D[0],theta)>0.5).astype(int)
+print("Accuracy score before training:",
+      sklearn.metrics.accuracy_score(D[1],Y_pred))
+accuScore = []
 for i in range(0, epochs):
     for j in range(0, examples):
         delta = grad_objective(theta, j)
-        theta = update_theta(theta,delta, 0.01)
-        rmse.append(sklearn.metrics.mean_squared_error(D[1],neural_network(D[0], theta)))
-print("RMSE after training:",
-      sklearn.metrics.mean_squared_error(D[1],neural_network(D[0],theta)))
-pylab.plot(rmse)
+        theta = update_theta(theta,delta, 0.1)
+        Y_pred  = (neural_network(D[0],theta)>0.5).astype(int)
+        accuScore.append(sklearn.metrics.accuracy_score(D[1],Y_pred))
+print("Accuracy score after training:",
+      sklearn.metrics.accuracy_score(D[1],Y_pred))
+pylab.plot(accuScore)
 pylab.show()
-#Output
-#RMSE before training: 1.88214665439
-#RMSE after training: 0.739508975012
+
