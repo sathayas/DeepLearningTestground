@@ -8,7 +8,7 @@ import pylab
 examples = 1000
 features = 100
 X = npr.randn(examples, features)   # scalar features
-randY = npr.random(examples)
+randY = npr.rand(examples)
 Y = np.array([])
 for y in randY:
     if 0<=y<0.25:
@@ -21,16 +21,17 @@ for y in randY:
         Y = np.append(Y,4)
 D = (X, Y)
 
-### Start from here ###
-
 # Specify the network
 layer1_units = 10
 layer2_units = 4
+layer3_units = 4
 w1 = npr.rand(features, layer1_units)
 b1 = npr.rand(layer1_units)
 w2 = npr.rand(layer1_units, layer2_units)
 b2 = npr.rand(layer2_units)
-theta = (w1, b1, w2, b2)
+w3 = npr.rand(layer2_units, layer3_units)
+b3 = npr.rand(layer3_units)
+theta = (w1, b1, w2, b2, w3, b3)
 
 
 # Define the loss function (cross entropy)
@@ -39,6 +40,8 @@ def cross_entropy(y, y_hat):
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
+
+##### Start here
 
 # Wraper around the Neural Network
 def neural_network(x, theta):
