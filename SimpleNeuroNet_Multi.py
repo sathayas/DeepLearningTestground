@@ -57,18 +57,21 @@ def update_theta(theta, delta, alpha):
 grad_objective = grad(objective)
 
 # Train the Neural Network
-epochs = 30
+epochs = 50
 Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
 print("Accuracy score before training:",
       sklearn.metrics.accuracy_score(D[1],Y_pred))
 accuScore = []
 for i in range(0, epochs):
+    print('Epoch: %d' % (i+1))
     for j in range(0, examples):
         delta = grad_objective(theta,j)
-        theta = update_theta(theta,delta, 0.25)
+        theta = update_theta(theta,delta, 0.3)
         Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
         accuScore.append(sklearn.metrics.accuracy_score(D[1],Y_pred))
 print("Accuracy score after training:",
       sklearn.metrics.accuracy_score(D[1],Y_pred))
+print(sklearn.metrics.confusion_matrix(D[1],Y_pred))
+print(sklearn.metrics.classification_report(D[1],Y_pred))
 pylab.plot(accuScore)
 pylab.show()
