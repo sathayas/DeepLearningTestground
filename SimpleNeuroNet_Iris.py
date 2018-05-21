@@ -10,13 +10,15 @@ import pylab
 # Loading the iris data
 iris = datasets.load_iris()
 X = iris.data  # sepal length and petal width only
-Y = iris.target
+Y = iris.target + 1
 feature_names = iris.feature_names
 target_names = iris.target_names
 
 # spliting the data into training and testing data sets
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=50,
-                                                    random_state=0)
+#X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=50,
+#                                                    random_state=0)
+X_train = X
+Y_train = Y
 
 # some stats on data
 examples = len(Y_train)
@@ -24,9 +26,9 @@ features = X_train.shape[1]
 D = (X_train, Y_train)
 
 # Specify the network
-layer1_units = 10
-layer2_units = features
-layer3_units = features
+layer1_units = 4
+layer2_units = 3
+layer3_units = 3
 w1 = npr.rand(features, layer1_units)
 b1 = npr.rand(layer1_units)
 w2 = npr.rand(layer1_units, layer2_units)
@@ -42,7 +44,7 @@ def sigmoid(x):
     return 1/(1+np.exp(-x))
 
 def softmax(x):
-    return np.exp(x.reshape(-1,4))/np.sum(np.exp(x.reshape(-1,4)),axis=1).reshape(-1,1)
+    return np.exp(x.reshape(-1,3))/np.sum(np.exp(x.reshape(-1,3)),axis=1).reshape(-1,1)
 
 # Wraper around the Neural Network
 def neural_network(x, theta):
@@ -68,20 +70,24 @@ def update_theta(theta, delta, alpha):
 grad_objective = grad(objective)
 
 # Train the Neural Network
-epochs = 50
+epochs = 100
 Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
 print("Accuracy score before training:",
       accuracy_score(D[1],Y_pred))
 accuScore = []
+w2Sample = []
 for i in range(0, epochs):
     print('Epoch: %d' % (i+1))
     for j in range(0, examples):
         delta = grad_objective(theta,j)
-        theta = update_theta(theta,delta, 0.3)
+        theta = update_theta(theta,delta, 0.5)
+        w2Sample.append(theta[-1][-1])
         Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
         accuScore.append(accuracy_score(D[1],Y_pred))
 print("Accuracy score after training:", accuracy_score(D[1],Y_pred))
 print(confusion_matrix(D[1],Y_pred))
 print(classification_report(D[1],Y_pred))
 pylab.plot(accuScore)
+pylab.show()
+pylab.plot(w2Sample)
 pylab.show()
