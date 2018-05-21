@@ -9,16 +9,7 @@ examples = 1000
 features = 100
 X = npr.randn(examples, features)   # scalar features
 randY = npr.rand(examples)
-Y = np.array([])
-for y in randY:
-    if 0<=y<0.25:
-        Y = np.append(Y,1)
-    elif 0.25<=y<0.5:
-        Y = np.append(Y,2)
-    elif 0.5<=y<0.75:
-        Y = np.append(Y,3)
-    else:
-        Y = np.append(Y,4)
+Y = np.ceil(randY*4)
 D = (X, Y)
 
 # Specify the network
@@ -29,28 +20,27 @@ w1 = npr.rand(features, layer1_units)
 b1 = npr.rand(layer1_units)
 w2 = npr.rand(layer1_units, layer2_units)
 b2 = npr.rand(layer2_units)
-w3 = npr.rand(layer2_units, layer3_units)
-b3 = npr.rand(layer3_units)
-theta = (w1, b1, w2, b2, w3, b3)
+theta = (w1, b1, w2, b2)
 
 
 # Define the loss function (cross entropy)
 def cross_entropy(y, y_hat):
-    return np.sum(-(y * np.log(y_hat)))
+    return np.sum(-np.log(y_hat[np.arange(y_hat.shape[0]),y.astype(int)-1]))
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
-##### Start here
+def softmax(x):
+    return np.exp(x.reshape(-1,4))/np.sum(np.exp(x.reshape(-1,4)),axis=1).reshape(-1,1)
 
 # Wraper around the Neural Network
 def neural_network(x, theta):
     w1, b1, w2, b2 = theta
-    return sigmoid(np.dot((sigmoid(np.dot(x,w1) + b1)), w2) + b2)
+    return softmax(sigmoid(np.dot((sigmoid(np.dot(x,w1) + b1)), w2) + b2))
 
 # Wrapper around the objective function to be optimised
 def objective(theta, idx):
-    return binary_cross_entropy(D[1][idx], neural_network(D[0][idx], theta))
+    return cross_entropy(D[1][idx], neural_network(D[0][idx], theta))
 
 # Update
 def update_theta(theta, delta, alpha):
@@ -67,19 +57,18 @@ def update_theta(theta, delta, alpha):
 grad_objective = grad(objective)
 
 # Train the Neural Network
-epochs = 10
-Y_pred  = (neural_network(D[0],theta)>0.5).astype(int)
+epochs = 30
+Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
 print("Accuracy score before training:",
       sklearn.metrics.accuracy_score(D[1],Y_pred))
 accuScore = []
 for i in range(0, epochs):
     for j in range(0, examples):
-        delta = grad_objective(theta, j)
-        theta = update_theta(theta,delta, 0.1)
-        Y_pred  = (neural_network(D[0],theta)>0.5).astype(int)
+        delta = grad_objective(theta,j)
+        theta = update_theta(theta,delta, 0.25)
+        Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
         accuScore.append(sklearn.metrics.accuracy_score(D[1],Y_pred))
 print("Accuracy score after training:",
       sklearn.metrics.accuracy_score(D[1],Y_pred))
 pylab.plot(accuScore)
 pylab.show()
-
