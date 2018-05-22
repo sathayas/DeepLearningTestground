@@ -26,9 +26,8 @@ features = X_train.shape[1]
 D = (X_train, Y_train)
 
 # Specify the network
-layer1_units = 4
+layer1_units = 100
 layer2_units = 3
-layer3_units = 3
 w1 = npr.rand(features, layer1_units)
 b1 = npr.rand(layer1_units)
 w2 = npr.rand(layer1_units, layer2_units)
@@ -42,6 +41,9 @@ def cross_entropy(y, y_hat):
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
+
+def relu(x):
+    return abs(x)*(x>0)
 
 def softmax(x):
     return np.exp(x.reshape(-1,3))/np.sum(np.exp(x.reshape(-1,3)),axis=1).reshape(-1,1)
@@ -70,7 +72,7 @@ def update_theta(theta, delta, alpha):
 grad_objective = grad(objective)
 
 # Train the Neural Network
-epochs = 100
+epochs = 50
 Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
 print("Accuracy score before training:",
       accuracy_score(D[1],Y_pred))
@@ -80,7 +82,7 @@ for i in range(0, epochs):
     print('Epoch: %d' % (i+1))
     for j in range(0, examples):
         delta = grad_objective(theta,j)
-        theta = update_theta(theta,delta, 0.5)
+        theta = update_theta(theta,delta, 0.01)
         w2Sample.append(theta[-1][-1])
         Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
         accuScore.append(accuracy_score(D[1],Y_pred))
