@@ -7,9 +7,12 @@ import pylab
 # Generate Dataset
 examples = 1000
 features = 100
+nCat = 4
 X = npr.randn(examples, features)   # scalar features
 randY = npr.rand(examples)
-Y = np.ceil(randY*4)
+vecY = np.floor(randY*nCat).astype(int)
+Y = np.zeros([examples,nCat]).astype(int)
+Y[np.arange(examples),vecY] = 1
 D = (X, Y)
 
 # Specify the network
@@ -25,7 +28,7 @@ theta = (w1, b1, w2, b2)
 
 # Define the loss function (cross entropy)
 def cross_entropy(y, y_hat):
-    return np.sum(-np.log(y_hat[np.arange(y_hat.shape[0]),y.astype(int)-1]))
+    return np.sum(-y*np.log(y_hat))
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
@@ -58,20 +61,20 @@ grad_objective = grad(objective)
 
 # Train the Neural Network
 epochs = 50
-Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
+Y_pred  = np.argmax(neural_network(D[0],theta), axis=1)
 print("Accuracy score before training:",
-      sklearn.metrics.accuracy_score(D[1],Y_pred))
+      sklearn.metrics.accuracy_score(np.nonzero(D[1])[1],Y_pred))
 accuScore = []
 for i in range(0, epochs):
     print('Epoch: %d' % (i+1))
     for j in range(0, examples):
         delta = grad_objective(theta,j)
         theta = update_theta(theta,delta, 0.3)
-        Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
-        accuScore.append(sklearn.metrics.accuracy_score(D[1],Y_pred))
+        Y_pred  = np.argmax(neural_network(D[0],theta), axis=1)
+        accuScore.append(sklearn.metrics.accuracy_score(np.nonzero(D[1])[1],Y_pred))
 print("Accuracy score after training:",
-      sklearn.metrics.accuracy_score(D[1],Y_pred))
-print(sklearn.metrics.confusion_matrix(D[1],Y_pred))
-print(sklearn.metrics.classification_report(D[1],Y_pred))
+      sklearn.metrics.accuracy_score(np.nonzero(D[1])[1],Y_pred))
+print(sklearn.metrics.confusion_matrix(np.nonzero(D[1])[1],Y_pred))
+print(sklearn.metrics.classification_report(np.nonzero(D[1])[1],Y_pred))
 pylab.plot(accuScore)
 pylab.show()
