@@ -10,7 +10,9 @@ import pylab
 # Loading the iris data
 iris = datasets.load_iris()
 X = iris.data  # sepal length and petal width only
-Y = iris.target + 1
+vecY = iris.target
+Y = np.zeros([len(vecY),max(vecY)+1]).astype(int)
+Y[np.arange(len(vecY)), vecY] = 1
 feature_names = iris.feature_names
 target_names = iris.target_names
 
@@ -21,12 +23,12 @@ X_train = X
 Y_train = Y
 
 # some stats on data
-examples = len(Y_train)
+examples = Y_train.shape[0]
 features = X_train.shape[1]
 D = (X_train, Y_train)
 
 # Specify the network
-layer1_units = 100
+layer1_units = 20
 layer2_units = 3
 w1 = npr.rand(features, layer1_units)
 b1 = npr.rand(layer1_units)
@@ -37,7 +39,7 @@ theta = (w1, b1, w2, b2)
 
 # Define the loss function (cross entropy)
 def cross_entropy(y, y_hat):
-    return np.sum(-np.log(y_hat[np.arange(y_hat.shape[0]),y.astype(int)-1]))
+    return np.sum(-y*np.log(y_hat))
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
@@ -73,23 +75,19 @@ grad_objective = grad(objective)
 
 # Train the Neural Network
 epochs = 50
-Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
+Y_pred  = np.argmax(neural_network(D[0],theta), axis=1)
 print("Accuracy score before training:",
-      accuracy_score(D[1],Y_pred))
+      accuracy_score(np.nonzero(D[1])[1],Y_pred))
 accuScore = []
-w2Sample = []
 for i in range(0, epochs):
     print('Epoch: %d' % (i+1))
     for j in range(0, examples):
         delta = grad_objective(theta,j)
         theta = update_theta(theta,delta, 0.01)
-        w2Sample.append(theta[-1][-1])
-        Y_pred  = np.argmax(neural_network(D[0],theta), axis=1) + 1
-        accuScore.append(accuracy_score(D[1],Y_pred))
-print("Accuracy score after training:", accuracy_score(D[1],Y_pred))
-print(confusion_matrix(D[1],Y_pred))
-print(classification_report(D[1],Y_pred))
+        Y_pred  = np.argmax(neural_network(D[0],theta), axis=1)
+        accuScore.append(accuracy_score(np.nonzero(D[1])[1],Y_pred))
+print("Accuracy score after training:", accuracy_score(np.nonzero(D[1])[1],Y_pred))
+print(confusion_matrix(np.nonzero(D[1])[1],Y_pred))
+print(classification_report(np.nonzero(D[1])[1],Y_pred))
 pylab.plot(accuScore)
-pylab.show()
-pylab.plot(w2Sample)
 pylab.show()
