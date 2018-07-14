@@ -10,7 +10,9 @@ def L2(x):
 # some parameters
 examples = 1000
 features = 100
-training_steps = 1000
+training_steps = 2000
+alpha = 0.1
+lamb = 0.01
 
 # generating random data
 D = (np.random.randn(examples, features), 
@@ -29,14 +31,14 @@ p = 1 / (1 + T.exp(-T.dot(x, w) - b))
 
 # error - binary cross entropy since binary outcome
 error = T.nnet.binary_crossentropy(p,y)
-loss = error.mean() + 0.01 * L2(w)
+loss = error.mean() + lamb * L2(w)
 prediction = p > 0.5
 gw, gb = T.grad(loss, [w, b])
 
 # training function
 train = theano.function(inputs=[x,y],
                         outputs=[p, error], 
-                        updates=((w, w - 0.1 * gw),(b, b - 0.1 * gb)))
+                        updates=((w, w - alpha * gw),(b, b - alpha * gb)))
 
 # prediction function
 predict = theano.function(inputs=[x], outputs=prediction)
