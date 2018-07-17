@@ -2,6 +2,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
 # L2 function
 def L2(x):
@@ -50,6 +51,13 @@ predict = theano.function(inputs=[x], outputs=p)
 # before training
 print("RMSE before training:", 
       mean_squared_error(D[1],predict(D[0])))
+plt.plot(D[1],predict(D[0]),'b.')
+plt.xlabel('Data')
+plt.ylabel('Predicted')
+plt.title('Before training')
+plt.xlim([-4,4])
+plt.ylim([-35,40])
+plt.show()
 
 # training
 for i in range(training_steps):
@@ -58,3 +66,10 @@ for i in range(training_steps):
 # after training
 print("RMSE after training:", 
       mean_squared_error(D[1],predict(D[0])))
+plt.plot(D[1],predict(D[0]),'b.')
+plt.xlabel('Data')
+plt.ylabel('Predicted')
+plt.title('After training')
+plt.xlim([-4,4])
+plt.ylim([-10,10])
+plt.show()
