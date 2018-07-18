@@ -3,6 +3,7 @@ import theano
 import theano.tensor as T
 from sklearn.metrics import accuracy_score
 from sklearn import datasets
+import matplotlib.pyplot as plt
 
 # L2 function
 def L2(x):
@@ -67,9 +68,22 @@ print("Accuracy before Training:",
       accuracy_score(D[1], np.array(predict(D[0])).ravel()))
 
 # training
+xStep = []
+yAccu = []
 for i in range(training_steps):
     prediction, error = train(D[0], D[1])
+    if i%100 == 0:
+        xStep.append(i)
+        yAccu.append(accuracy_score(D[1], np.array(predict(D[0])).ravel()))
 
 # after training
 print("Accuracy after Training:", 
       accuracy_score(D[1], np.array(predict(D[0])).ravel()))
+
+
+# plotting the accuracy
+plt.plot(xStep,yAccu)
+plt.xlabel('Steps')
+plt.ylabel('Accuracy')
+plt.show()
+
