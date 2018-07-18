@@ -14,9 +14,9 @@ D = (brca.data, brca.target)
 features = D[0].shape[1]
 examples = D[0].shape[0]
 hidden = 10
-training_steps = 1000
+training_steps = 10000
 lamb = 0.01   # for regularization of weights in loss function
-alpha = 0.1   # parameter for updating weights and biases
+alpha = 0.05   # parameter for updating weights and biases
 
 # generating random data
 D = (np.random.randn(examples, features), 
