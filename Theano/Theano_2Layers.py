@@ -32,9 +32,9 @@ w2 = theano.shared(np.random.randn(hidden), name="w2")
 b1 = theano.shared(np.zeros(hidden), name="b1")
 b2 = theano.shared(0., name="b2")
 
-# squashing functions -- sigmoid
-p1 = T.nnet.sigmoid(T.dot(x, w1) + b1)
-p2 = T.nnet.sigmoid(T.dot(p1, w2) + b2)
+# squashing functions -- tanh
+p1 = T.tanh(T.dot(x, w1) + b1)
+p2 = T.tanh(T.dot(p1, w2) + b2)
 
 # error function -- binary cross entropy for binary outcome
 error = T.nnet.binary_crossentropy(p2,y)
