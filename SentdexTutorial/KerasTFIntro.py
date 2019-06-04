@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # loading the test data
 mnist = tf.keras.datasets.mnist
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
-
+shapeOrig = x_train[0].shape
 
 # just for fun, taking a look at an image
 plt.imshow(x_train[0],cmap=plt.cm.binary)
@@ -15,12 +15,12 @@ plt.show()
 
 
 # normalizing the intesity scale from 0 to 1
-x_train = tf.keras.utils.normalize(x_train, axis=1)
-x_test = tf.keras.utils.normalize(x_test, axis=1)
+x_train = tf.keras.utils.normalize(x_train, axis=1).reshape(x_train.shape[0], -1)
+x_test = tf.keras.utils.normalize(x_test, axis=1).reshape(x_test.shape[0], -1)
 
 
 # just for fun, taking a look at an image
-plt.imshow(x_train[0],cmap=plt.cm.binary)
+plt.imshow(x_train[0].reshape(shapeOrig),cmap=plt.cm.binary)
 plt.colorbar()
 plt.show()
 
@@ -30,10 +30,10 @@ plt.show()
 model = tf.keras.models.Sequential()  # creating a model object
 
 # flatten layer
-model.add(tf.keras.layers.Flatten())
+#model.add(tf.keras.layers.Flatten())
 
 # dense layer x2
-model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu, input_shape= x_train.shape[1:]))
 model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
 
 # output layer
