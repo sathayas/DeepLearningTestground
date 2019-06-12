@@ -53,5 +53,19 @@ def create_training_data():
 
 
 create_training_data()
-
+# checking the number of observations
 print(len(training_data))
+
+# random shuffling the training data
+random.shuffle(training_data)
+
+# checking to see if the data is truly randomized
+nDog = 0
+nCat = 0
+for sample in training_data:
+    if sample[1]==0:
+        nDog += 1
+    else:
+        nCat += 1
+
+print('Dogs: %d,   Cats: %d' % (nDog, nCat))
