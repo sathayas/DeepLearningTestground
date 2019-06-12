@@ -4,11 +4,13 @@ import os
 import cv2
 from tqdm import tqdm
 
+### Parameters
+IMG_SIZE = 100
 DATADIR = "PetImages"
-
 CATEGORIES = ["Dog", "Cat"]
 
 
+### Just seeing the first image, original size read as gray scae image
 for category in CATEGORIES:  # do dogs and cats
     path = os.path.join(DATADIR,category)  # create path to dogs and cats
     for img in os.listdir(path):  # iterate over each image per dogs and cats
@@ -18,3 +20,9 @@ for category in CATEGORIES:  # do dogs and cats
 
         break  # we just want one for now so break
     break  #...and one more!
+
+
+### Converting the image size to IMG_SIZE x IMG_SIZE
+new_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+plt.imshow(new_array, cmap='gray')
+plt.show()
