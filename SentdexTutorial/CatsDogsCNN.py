@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 import random
+import pickle
 from tqdm import tqdm
 
 ### Parameters
-IMG_SIZE = 100
+IMG_SIZE = 75
 DATADIR = "PetImages"
 CATEGORIES = ["Dog", "Cat"]
 
@@ -69,3 +70,26 @@ for sample in training_data:
         nCat += 1
 
 print('Dogs: %d,   Cats: %d' % (nDog, nCat))
+
+
+#### Splitting the features and targets
+X = []
+y = []
+
+for features,label in training_data:
+    X.append(features)
+    y.append(label)
+
+# The image has to be shaped this way
+X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
+
+
+
+#### Saving the features and targets as pickle objects
+pickle_out = open("X.pickle","wb")
+pickle.dump(X, pickle_out)
+pickle_out.close()
+
+pickle_out = open("y.pickle","wb")
+pickle.dump(y, pickle_out)
+pickle_out.close()
